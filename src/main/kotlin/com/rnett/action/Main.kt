@@ -23,7 +23,7 @@ suspend fun main() {
 
     val version by inputs.optional
 
-    val restore = inputs.getRequired("restore").toLowerCase() == "true"
+    val restore = inputs.getRequired("restore").toLowerCase() != "false"
 
     /**
      * Replaces $version with version, or errors if it isn't set
