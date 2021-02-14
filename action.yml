@@ -1,0 +1,26 @@
+name: 'Publish docs'
+description: 'Publishes docs to github pages'
+inputs:
+  from:
+    description: The location of the docs
+    required: true
+  publish-to:
+    description: "The folder in the branch to put the docs in.  See README.md."
+    required: false
+  branch:
+    description: The branch to push docs to
+    required: false
+    default: 'gh-pages'
+  version:
+    description: "The version of the documentation.  Used if publish-to is 'version' or 'version+latest'"
+    required: false
+  message:
+    description: "Message for the docs commit"
+    required: false
+  restore:
+    description: Whether to restore the cwd after pushing
+    required: false
+    default: 'true'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

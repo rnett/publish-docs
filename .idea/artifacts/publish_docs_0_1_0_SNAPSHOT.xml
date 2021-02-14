@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="publish-docs-0.1.0-SNAPSHOT">
+    <output-path>C:\Users\jimne\Google Drive\My Stuff\Github Actions\publish-docs\build\libs</output-path>
+    <root id="archive" name="publish-docs-0.1.0-SNAPSHOT.jar">
+      <element id="module-output" name="publish-docs.main" />
+    </root>
+  </artifact>
+</component>
