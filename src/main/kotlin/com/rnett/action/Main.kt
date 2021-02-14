@@ -96,7 +96,7 @@ suspend fun main() = runOrFail{
     }
 
     exec.execCommand("git add -A")
-    exec.execCommand("git commit -q -m ${message.replace("\$version", version!!)}")
+    exec.execCommand("git commit -q -m \"${message.replace("\$version", version!!)}\"")
 
     exec.execCommand("git push")
 
