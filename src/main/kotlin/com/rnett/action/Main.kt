@@ -98,7 +98,7 @@ suspend fun main() = runOrFail{
     exec.execCommand("git add -A")
     exec.execCommand("git commit -q -m \"${message.replace("\$version", version!!)}\"")
 
-    exec.execCommand("git push --set-upstream")
+    exec.execCommand("git push --set-upstream origin $branch")
 
 
     if(restoreDir != null){
