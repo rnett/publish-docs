@@ -45,13 +45,13 @@ suspend fun main() {
 
     val publishTo = when (_currents.toLowerCase()) {
         "version+latest" -> PublishTo.Version(
-            version ?: fail("Set 'publish-to' to 'version but didn't specify a version"), true
+            version ?: fail("Set 'publish-to' to 'version+latest' but didn't specify a version"), true
         )
         "version + latest" -> PublishTo.Version(
-            version ?: fail("Set 'publish-to' to 'version but didn't specify a version"), true
+            version ?: fail("Set 'publish-to' to 'version + latest' but didn't specify a version"), true
         )
         "version" -> PublishTo.Version(
-            version ?: fail("Set 'publish-to' to 'version but didn't specify a version"),
+            version ?: fail("Set 'publish-to' to 'version' but didn't specify a version"),
             false
         )
         else -> PublishTo.Custom(_currents)
