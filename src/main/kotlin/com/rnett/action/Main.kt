@@ -2,6 +2,7 @@ package com.rnett.action
 
 import com.rnett.action.core.fail
 import com.rnett.action.core.inputs
+import com.rnett.action.core.log
 import com.rnett.action.exec.exec
 
 sealed class PublishTo {
@@ -11,6 +12,7 @@ sealed class PublishTo {
 }
 
 suspend fun updateDocs(folder: Path, from: Path) {
+    log.info("Copying docs to $folder")
     folder.children.forEach { it.delete(true) }
     from.copy(folder)
 }
@@ -59,6 +61,7 @@ suspend fun main() {
     Path(from).moveChildren(fromPath)
 
     val restoreDir = if (restore) {
+        log.info("Saving working directory")
         Path("../restore-temp/").apply { mkdir() }
     } else
         null
@@ -95,6 +98,7 @@ suspend fun main() {
 
 
     if(restoreDir != null){
+        log.info("Restoring working directory")
         Path.cwd.children.filter { it.name != ".git" }.forEach { it.delete(true) }
         restoreDir.moveChildren(Path.cwd)
         restoreDir.delete(true)
