@@ -3,6 +3,7 @@ package com.rnett.action
 import com.rnett.action.core.fail
 import com.rnett.action.core.inputs
 import com.rnett.action.core.log
+import com.rnett.action.core.runOrFail
 import com.rnett.action.exec.exec
 
 sealed class PublishTo {
@@ -12,13 +13,13 @@ sealed class PublishTo {
 }
 
 suspend fun updateDocs(folder: Path, from: Path) {
+    folder.mkdir()
     log.info("Copying docs to $folder")
     folder.children.forEach { it.delete(true) }
     from.copy(folder)
 }
 
-//TODO subdir has git issues.  Move all but .git out, checkout branch (shallow?), commit & push, move back in
-suspend fun main() {
+suspend fun main() = runOrFail{
 
     val from by inputs
     val branch by inputs
@@ -27,6 +28,9 @@ suspend fun main() {
 
     val restore = inputs.getRequired("restore").toLowerCase() != "false"
 
+    /**
+     * Replaces $version with version, or errors if it isn't set
+     */
     /**
      * Replaces $version with version, or errors if it isn't set
      */
@@ -57,10 +61,6 @@ suspend fun main() {
         else -> PublishTo.Custom(_currents)
     }
 
-    log.info("CWD: ${Path.cwd}")
-    log.info("..: ${Path("..")}")
-    log.info("cwd/..: ${Path.cwd / ".."}")
-
     val fromPath = Path("../docs-temp/").apply { mkdir() }
     Path(from).moveChildren(fromPath)
 
@@ -78,7 +78,7 @@ suspend fun main() {
         }
     }
 
-    exec.execCommand("git checkout -B $branch")
+    exec.execCommand("git checkout -q -B $branch")
 
     when (publishTo) {
         is PublishTo.Version -> {
@@ -96,7 +96,7 @@ suspend fun main() {
     }
 
     exec.execCommand("git add -A")
-    exec.execCommand("git commit -m ${message.replace("\$version", version!!)}")
+    exec.execCommand("git commit -q -m ${message.replace("\$version", version!!)}")
 
     exec.execCommand("git push")
 
