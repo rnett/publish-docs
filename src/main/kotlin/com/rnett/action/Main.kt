@@ -57,7 +57,11 @@ suspend fun main() {
         else -> PublishTo.Custom(_currents)
     }
 
-    val fromPath = Path("../docs-temp/")
+    log.info("CWD: ${Path.cwd}")
+    log.info("..: ${Path("..")}")
+    log.info("cwd/..: ${Path.cwd / ".."}")
+
+    val fromPath = Path("../docs-temp/").apply { mkdir() }
     Path(from).moveChildren(fromPath)
 
     val restoreDir = if (restore) {
