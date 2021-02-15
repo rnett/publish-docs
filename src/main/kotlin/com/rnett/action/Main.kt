@@ -78,9 +78,14 @@ suspend fun main() = runOrFail{
         }
     }
 
+    exec.execCommand("git fetch")
     exec.execCommand("git checkout -q -B $branch")
-    exec.execCommand("git branch  --set-upstream-to origin/$branch")
-    exec.execCommand("git pull -q --force")
+    val existing = exec.execCommandAndCapture("git branch -r").stdout
+    val remoteExists = "origin/$branch" in existing
+    if(remoteExists) {
+        exec.execCommand("git branch --set-upstream-to origin/$branch")
+        exec.execCommand("git pull -q --force")
+    }
 
     when (publishTo) {
         is PublishTo.Version -> {
@@ -100,7 +105,7 @@ suspend fun main() = runOrFail{
     exec.execCommand("git add -A")
     exec.execCommand("git commit -q -m \"${message.replace("\$version", version!!)}\"")
 
-    exec.execCommand("git push")
+    exec.execCommand("git push origin $branch")
 
 
     if(restoreDir != null){
