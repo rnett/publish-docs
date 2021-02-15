@@ -24,6 +24,9 @@ suspend fun main() = runOrFail{
     val from by inputs
     val branch by inputs
 
+    val authorName = inputs.getRequired("author-name")
+    val authorEmail = inputs.getRequired("author-email")
+
     val version by inputs.optional
 
     val restore = inputs.getRequired("restore").toLowerCase() != "false"
@@ -104,7 +107,7 @@ suspend fun main() = runOrFail{
     }
 
     exec.execCommand("git add -A")
-    exec.execCommand("git commit -q -m \"${message.replace("\$version", version!!)}\"")
+    exec.execCommand("git commit -q -m \"${message.replace("\$version", version!!)}\" --author $authorName <$authorEmail>")
 
     exec.execCommand("git push origin $branch")
 

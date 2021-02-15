@@ -21,6 +21,14 @@ inputs:
     description: Whether to restore the cwd after pushing
     required: false
     default: 'true'
+  author-name:
+    description: The name of the user that will be displayed as the author of the commit
+    required: false
+    default: ${{ github.actor }}
+  author-email:
+    description: The email of the user that will be displayed as the author of the commit
+    required: false
+    default: ${{ github.actor }}@users.noreply.github.com
 runs:
   using: 'node12'
   main: 'dist/index.js'

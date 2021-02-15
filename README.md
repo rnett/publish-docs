@@ -18,6 +18,8 @@ contains `$version`.
   is `"Docs for \$version"` is `version` is passed, or `"Docs update"` if not.
 * `restore` - whether to save and restore the working directory after pushing docs. True by default. Will only not
   restore if equal to `false` (non case sensitive).
+* `author-name` - the author name for the commit.  The triggering user, by default.
+* `author-email` - the author email for the commit.  The triggering user's GitHub noreply address, by default.
 
 This gives two modes of operation: one where `version` is specified, `publish-to` can use `version` or `version+latest`,
 and `message` can use `$version`, and one where `version` is not specified and `pubish-to` must be a path and `message`
