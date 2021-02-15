@@ -16,7 +16,7 @@ suspend fun updateDocs(folder: Path, from: Path) {
     folder.mkdir()
     log.info("Copying docs to $folder")
     folder.children.forEach { it.delete(true) }
-    from.copy(folder)
+    from.copyChildren(folder)
 }
 
 suspend fun main() = runOrFail{
