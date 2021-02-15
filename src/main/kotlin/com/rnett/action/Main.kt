@@ -79,13 +79,16 @@ suspend fun main() = runOrFail{
     }
 
     exec.execCommand("git fetch")
-    exec.execCommand("git checkout -q -B $branch")
     val existing = exec.execCommandAndCapture("git branch -r").stdout
     val remoteExists = "origin/$branch" in existing
-    if(remoteExists) {
-        exec.execCommand("git branch --set-upstream-to origin/$branch")
-        exec.execCommand("git pull -q --force")
-    }
+
+    exec.execCommand("git checkout -q -b -t $branch")
+
+//    if(remoteExists) {
+//        exec.execCommand("git checkout -q $branch")
+//    } else {
+//        exec.execCommand("git checkout -q -B $branch")
+//    }
 
     when (publishTo) {
         is PublishTo.Version -> {
