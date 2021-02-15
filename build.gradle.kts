@@ -1,4 +1,5 @@
 import com.rnett.action.githubAction
+import com.rnett.action.useAutoBuildWorkflow
 
 plugins {
     kotlin("js") version "1.4.30"
@@ -20,6 +21,8 @@ dependencies {
 
     implementation("com.github.rnett.ktjs-github-action:kotlin-js-action:0.1.3-SNAPSHOT")
 }
+
+useAutoBuildWorkflow()
 
 kotlin {
     js(IR) {
