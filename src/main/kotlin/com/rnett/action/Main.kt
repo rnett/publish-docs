@@ -82,7 +82,7 @@ suspend fun main() = runOrFail{
     val existing = exec.execCommandAndCapture("git branch -r").stdout
     val remoteExists = "origin/$branch" in existing
 
-    exec.execCommand("git checkout -q -b -t $branch")
+    exec.execCommand("git checkout -q $branch")
 
 //    if(remoteExists) {
 //        exec.execCommand("git checkout -q $branch")
