@@ -24,12 +24,12 @@ suspend fun main() = runOrFail{
     val from by inputs
     val branch by inputs
 
-    val authorName = inputs.getRequired("author-name")
-    val authorEmail = inputs.getRequired("author-email")
+    val authorName = inputs["author-name"]
+    val authorEmail = inputs["author-email"]
 
     val version by inputs.optional
 
-    val restore = inputs.getRequired("restore").toLowerCase() != "false"
+    val restore = inputs["restore"].toLowerCase() != "false"
 
     /**
      * Replaces $version with version, or errors if it isn't set
