@@ -107,7 +107,8 @@ suspend fun main() = runOrFail{
     }
 
     exec.execCommand("git add -A")
-    exec.execCommand("git commit -q -m \"${message.replace("\$version", version!!)}\" --author=\"$authorName <$authorEmail>\"")
+    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
+            "commit -q -m \"${message.replace("\$version", version!!)}\"")
 
     exec.execCommand("git push origin $branch")
 
