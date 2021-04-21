@@ -106,7 +106,8 @@ suspend fun main() = runOrFail{
         PublishTo.Main -> updateDocs(Path.cwd, fromPath)
     }
 
-    exec.execCommand("git add -A")
+    exec.execCommand("git add .")
+    exec.execCommand("git add -u")
     exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
             "commit -q -m \"${message.replace("\$version", version!!)}\"")
 
