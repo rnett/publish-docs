@@ -14,6 +14,9 @@ contains `$version`.
   Basic escaping is done as well: `\,` will be replaced with `,`, `\$` with `$`, and `\\` with `\` in items (after the version and latest substitutions).  
   By default, is `$version,$latest` if `version` is passed or `.` otherwise.  Items that start with `!` will only be included for release versions, 
   and items that start with `?` will only be included on snapshot versions (all will be included if version is not specified).
+  
+  For example, you could use `$latest,!old_releases/$version` to publish to `snapshot` on snapshot versions, and `old_releases/$verison` and `release` on 
+  release versions, i.e. for use with the Dokka versioning plugin.
 * `version` - the version string to use if `publish-to` contains `$version` or `$latest`, or if `message`
   contains `$version`. Required if so, optional and unused otherwise.
 * `latests` - the values to replace `latest` with in `publish-to`.  The value for snapshots, `|`, then the value for releases.  Default is `snapshot|release`.
