@@ -109,16 +109,16 @@ suspend fun main() = runOrFail{
 
     exec.execCommand("git add .")
 
-    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
-            "commit -q -m \"${message.replace("\$version", version!!)}\"")
-
-    exec.execCommand("git push origin $branch")
-
-
-    if(restoreDir != null){
-        log.info("Restoring working directory")
-        Path.cwd.children.filter { it.name != ".git" }.forEach { it.delete(true) }
-        restoreDir.moveChildren(Path.cwd)
-        restoreDir.delete(true)
-    }
+//    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
+//            "commit -q -m \"${message.replace("\$version", version!!)}\"")
+//
+//    exec.execCommand("git push origin $branch")
+//
+//
+//    if(restoreDir != null){
+//        log.info("Restoring working directory")
+//        Path.cwd.children.filter { it.name != ".git" }.forEach { it.delete(true) }
+//        restoreDir.moveChildren(Path.cwd)
+//        restoreDir.delete(true)
+//    }
 }
