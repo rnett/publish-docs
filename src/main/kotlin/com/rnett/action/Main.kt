@@ -7,10 +7,10 @@ import com.rnett.action.core.runOrFail
 import com.rnett.action.exec.exec
 
 fun parseLocation(location: String, version: String?, isSnapshot: Boolean?, latestSnapshot: String, latestRelease: String): String {
-    if("\$version" in location){
+    if("\$version" in location && version == null){
         fail("\$version used in publish-to, but version is not set.")
     }
-    if("\$latest" in location){
+    if("\$latest" in location && version == null){
         fail("\$latest used in publish-to, but version is not set.")
     }
     return location.replace("\$version", version ?: "")
