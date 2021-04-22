@@ -4,7 +4,7 @@ This action publishes documentation by pushing it to a branch, by default `gh-pa
 
 #### Inputs
 
-Only `from` is required, although `version` will be if `publish-to` is `version` or `version+latest` or `message`
+Only `from` is required, although `version` will be if `publish-to` contains `$verison` or `$latest` or `message`
 contains `$version`.
 
 * `from` - the location of the docs to publish
