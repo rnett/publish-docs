@@ -19,7 +19,7 @@ suspend fun updateDocs(folder: Path, from: Path) {
     from.copyChildren(folder)
 }
 
-suspend fun main() = runOrFail{
+suspend fun main() = runOrFail {
 
     val from by inputs
     val branch by inputs
@@ -37,9 +37,9 @@ suspend fun main() = runOrFail{
     /**
      * Replaces $version with version, or errors if it isn't set
      */
-    val message by inputs.withDefault { if(version != null) "Docs for \$version" else "Docs update" }
+    val message by inputs.withDefault { if (version != null) "Docs for \$version" else "Docs update" }
 
-    if("\$version" in message && version == null)
+    if ("\$version" in message && version == null)
         fail("'\$version' used in message, but version not set.")
 
     /*
@@ -48,7 +48,7 @@ suspend fun main() = runOrFail{
        "version+latest"
        else uses as dir ("." for current)
      */
-    val _currents = inputs.getOrElse("publish-to"){ if(version != null) "version+latest" else "." }
+    val _currents = inputs.getOrElse("publish-to") { if (version != null) "version+latest" else "." }
 
     val publishTo = when (_currents.toLowerCase()) {
         "version+latest" -> PublishTo.Version(
@@ -86,7 +86,7 @@ suspend fun main() = runOrFail{
     val existing = exec.execCommandAndCapture("git branch -r").stdout
     val remoteExists = "origin/$branch" in existing
 
-    if(remoteExists) {
+    if (remoteExists) {
         exec.execCommand("git checkout -q $branch")
     } else {
         exec.execCommand("git checkout -q -B $branch")
@@ -109,12 +109,20 @@ suspend fun main() = runOrFail{
 
     exec.execCommand("git add .")
 
-    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
-            "commit -q -m \"${message.replace("\$version", version!!)}\"")
+    exec.execCommandAndCapture("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
+            "commit -q -m \"${message.replace("\$version", version!!)}\"").apply {
+        if (returnCode != 0) {
+            println("Commit failed:\n$stderr")
+        }
+    }
 
-    exec.execCommand("git push origin $branch")
+    exec.execCommandAndCapture("git push origin $branch").apply {
+        if (returnCode != 0) {
+            println("Push failed:\n$stderr")
+        }
+    }
 
-    if(restoreDir != null){
+    if (restoreDir != null) {
         log.info("Restoring working directory")
         Path.cwd.children.filter { it.name != ".git" }.forEach { it.delete(true) }
         restoreDir.moveChildren(Path.cwd)
