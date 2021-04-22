@@ -7,6 +7,10 @@ inputs:
   publish-to:
     description: "The folder in the branch to put the docs in.  See README.md."
     required: false
+  latests:
+    description: "The values to replace $latest with in publish-to.  Snapshot, then release, separated by a '|'."
+    required: false
+    default: 'snapshot|release"
   branch:
     description: The branch to push docs to
     required: false

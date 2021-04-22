@@ -6,10 +6,17 @@ import com.rnett.action.core.log
 import com.rnett.action.core.runOrFail
 import com.rnett.action.exec.exec
 
-sealed class PublishTo {
-    data class Version(val version: String, val latest: Boolean) : PublishTo()
-    data class Custom(val value: String) : PublishTo()
-    object Main : PublishTo()
+fun parseLocation(location: String, version: String?, isSnapshot: Boolean?, latestSnapshot: String, latestRelease: String): String {
+    if("\$version" in location){
+        fail("\$version used in publish-to, but version is not set.")
+    }
+    if("\$latest" in location){
+        fail("\$latest used in publish-to, but version is not set.")
+    }
+    return location.replace("\$version", version ?: "")
+        .replace("\$latest", if(isSnapshot == true) latestSnapshot else latestRelease)
+        .replace("\\,", ",")
+        .replace("\\\\", "\\")
 }
 
 suspend fun updateDocs(folder: Path, from: Path) {
@@ -28,6 +35,12 @@ suspend fun main() = runOrFail {
     val authorEmail = inputs["author-email"]
 
     val version by inputs.optional
+
+    val (latestSnapshot, latestRelease) = inputs.getOrElse("latests") { "snapshot|release" }.let {
+        if('|' !in it || it.count { it == '|' } > 1)
+            fail("latests must be two strings seperated by a '|'")
+        it.substringBefore('|') to it.substringAfter('|')
+    }
 
     val restore = inputs["restore"].toLowerCase() != "false"
 
@@ -48,21 +61,17 @@ suspend fun main() = runOrFail {
        "version+latest"
        else uses as dir ("." for current)
      */
-    val _currents = inputs.getOrElse("publish-to") { if (version != null) "version+latest" else "." }
-
-    val publishTo = when (_currents.toLowerCase()) {
-        "version+latest" -> PublishTo.Version(
-            version ?: fail("Set 'publish-to' to 'version+latest' but didn't specify a version"), true
-        )
-        "version + latest" -> PublishTo.Version(
-            version ?: fail("Set 'publish-to' to 'version + latest' but didn't specify a version"), true
-        )
-        "version" -> PublishTo.Version(
-            version ?: fail("Set 'publish-to' to 'version' but didn't specify a version"),
-            false
-        )
-        else -> PublishTo.Custom(_currents)
-    }
+    val isSnapshot = version?.toLowerCase()?.contains("snapshot")
+    val publishTo = inputs.getOrElse("publish-to") { if (version != null) "\$version,\$latest" else "." }
+        .split(',').filter { it.isNotBlank() }
+        .filterNot {
+            when(isSnapshot){
+                true -> it.startsWith('!')
+                false -> it.startsWith('?')
+                else -> false
+            }
+        }
+        .map { parseLocation(it.trimStart('!', '?'), version, isSnapshot, latestSnapshot, latestRelease) }
 
     val fromPath = Path("../docs-temp/").apply { mkdir() }
     Path(from).moveChildren(fromPath)
@@ -92,19 +101,8 @@ suspend fun main() = runOrFail {
         exec.execCommand("git checkout -q -B $branch")
     }
 
-    when (publishTo) {
-        is PublishTo.Version -> {
-            updateDocs(Path.cwd / publishTo.version, fromPath)
-            if (publishTo.latest) {
-                if (publishTo.version.toLowerCase().endsWith("snapshot")) {
-                    updateDocs(Path.cwd / "snapshot", fromPath)
-                } else {
-                    updateDocs(Path.cwd / "release", fromPath)
-                }
-            }
-        }
-        is PublishTo.Custom -> updateDocs(Path.cwd / publishTo.value, fromPath)
-        PublishTo.Main -> updateDocs(Path.cwd, fromPath)
+    publishTo.forEach {
+        updateDocs(Path.cwd / it, fromPath)
     }
 
     exec.execCommand("git add .")

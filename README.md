@@ -8,11 +8,15 @@ Only `from` is required, although `version` will be if `publish-to` is `version`
 contains `$version`.
 
 * `from` - the location of the docs to publish
-* `publish-to` - What directory to put the docs in. Can be a folder name, `version` to use the passed version,
-  or `version+latest` to use the passed version and a latest folder (`snapshot` for snapshot versions, `release`
-  otherwise). By default, is `version+latest` if `version` is passed or `.` otherwise.
-* `version` - the version string to use if `publish-to` is `version` or `version+latest`, or if `message`
+* `publish-to` - What directory to put the docs in. A comma separated list of folder names.  `$version` will be replaced with the passed version
+  (or error if it isn't passed).  `$latest` will be replaced with `snapshot` for snapshot versions (`snapshot` is in the string in any case), 
+  `release` otherwise (or error if `version` isn't passed), unless set using `latests`. 
+  Basic escaping is done as well: `\,` will be replaced with `,`, `\$` with `$`, and `\\` with `\` in items (after the version and latest substitutions).  
+  By default, is `$version,$latest` if `version` is passed or `.` otherwise.  Items that start with `!` will only be included for release versions, 
+  and items that start with `?` will only be included on snapshot versions (all will be included if version is not specified).
+* `version` - the version string to use if `publish-to` contains `version` or `latest`, or if `message`
   contains `$version`. Required if so, optional and unused otherwise.
+* `latests` - the values to replace `latest` with in `publish-to`.  The value for snapshots, `|`, then the value for releases.  Default is `snapshot|release`.
 * `branch` - the branch to push docs to. By default `gh-pages`.
 * `message` - the message for the docs commit.  `$version` will be substituted for the passed version. Default
   is `"Docs for \$version"` is `version` is passed, or `"Docs update"` if not.
