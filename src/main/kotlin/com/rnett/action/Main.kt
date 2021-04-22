@@ -109,6 +109,8 @@ suspend fun main() = runOrFail{
 
     exec.execCommand("git add .")
 
+    println("Added!")
+
 //    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
 //            "commit -q -m \"${message.replace("\$version", version!!)}\"")
 //
