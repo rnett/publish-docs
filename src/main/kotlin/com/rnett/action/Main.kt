@@ -106,15 +106,17 @@ suspend fun main() = runOrFail{
         PublishTo.Main -> updateDocs(Path.cwd, fromPath)
     }
 
+    exec.execCommand("ls -la")
+
     exec.execCommandAndCapture("git add .", ignoreReturnCode = true).let {
         if(it.returnCode != 0){
-            log.error("Command failed with error code ${it.returnCode}, stderr:\n${it.stderr}\nand stdout:\n${it.stdout}")
+            log.fatal("Command failed with error code ${it.returnCode}, stderr:\n${it.stderr}\nand stdout:\n${it.stdout}")
         }
     }
 
     exec.execCommandAndCapture("git add -u", ignoreReturnCode = true).let {
         if(it.returnCode != 0){
-            log.error("Command failed with error code ${it.returnCode}, stderr:\n${it.stderr}\nand stdout:\n${it.stdout}")
+            log.fatal("Command failed with error code ${it.returnCode}, stderr:\n${it.stderr}\nand stdout:\n${it.stdout}")
         }
     }
     exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
