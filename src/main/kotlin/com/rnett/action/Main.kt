@@ -73,6 +73,7 @@ suspend fun main() = runOrFail{
     } else
         null
 
+    //TODO this can fail silently
     Path.cwd.children.filter { it.name != ".git" }.forEach {
         if (restoreDir != null) {
             it.move(restoreDir)
@@ -107,6 +108,8 @@ suspend fun main() = runOrFail{
     }
 
     exec.execCommand("ls -la")
+
+    exec.execCommand("git --version")
 
     exec.execCommandAndCapture("git add .", ignoreReturnCode = true).let {
         if(it.returnCode != 0){

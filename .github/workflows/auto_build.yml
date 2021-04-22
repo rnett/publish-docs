@@ -21,8 +21,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build
         run: ./gradlew build
-#      - name: Commit dist
-#        uses: EndBug/add-and-commit@v7
-#        with:
-#          add: 'dist'
-#          message: 'Commit new dist'
+      - name: Commit dist
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: 'dist'
+          message: 'Commit new dist'
