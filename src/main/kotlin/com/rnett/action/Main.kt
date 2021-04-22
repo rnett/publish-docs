@@ -109,18 +109,10 @@ suspend fun main() = runOrFail {
 
     exec.execCommand("git add .")
 
-    exec.execCommandAndCapture("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
-            "commit -q -m \"${message.replace("\$version", version!!)}\"").apply {
-        if (returnCode != 0) {
-            println("Commit failed:\n$stderr")
-        }
-    }
+    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
+            "commit -q -m \"${message.replace("\$version", version ?: "")}\"")
 
-    exec.execCommandAndCapture("git push origin $branch").apply {
-        if (returnCode != 0) {
-            println("Push failed:\n$stderr")
-        }
-    }
+    exec.execCommand("git push origin $branch")
 
     if (restoreDir != null) {
         log.info("Restoring working directory")
