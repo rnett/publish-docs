@@ -91,6 +91,10 @@ suspend fun main() = runOrFail {
         }
     }
 
+    if(restoreDir != null){
+        (Path.cwd / ".git").copy(restoreDir)
+    }
+
     exec.execCommand("git fetch")
     val existing = exec.execCommandAndCapture("git branch -r").stdout
     val remoteExists = "origin/$branch" in existing
@@ -114,7 +118,7 @@ suspend fun main() = runOrFail {
 
     if (restoreDir != null) {
         log.info("Restoring working directory")
-        Path.cwd.children.filter { it.name != ".git" }.forEach { it.delete(true) }
+        Path.cwd.children.forEach { it.delete(true) }
         restoreDir.moveChildren(Path.cwd)
         restoreDir.delete(true)
     }
