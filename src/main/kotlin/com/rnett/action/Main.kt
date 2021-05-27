@@ -83,7 +83,10 @@ suspend fun main() = runOrFail {
         }
         .map { parseLocation(it.trimStart('!', '?'), version, isSnapshot, latestSnapshot, latestRelease) }
 
-    val fromPath = Path("../docs-temp/").apply { mkdir() }
+    val fromPath = Path("../docs-temp/").apply {
+        mkdir()
+        children.forEach { it.delete(true) }
+    }
     if(!from.isNullOrBlank())
         Path(from!!).moveChildren(fromPath)
     else
@@ -135,4 +138,5 @@ suspend fun main() = runOrFail {
         restoreDir.moveChildren(Path.cwd)
         restoreDir.delete(true)
     }
+    fromPath.delete(true)
 }
