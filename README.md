@@ -7,7 +7,8 @@ This action publishes documentation by pushing it to a branch, by default `gh-pa
 Only `from` is required, although `version` will be if `publish-to` contains `$verison` or `$latest` or `message`
 contains `$version`.
 
-* `from` - the location of the docs to publish
+* `from` - the location of the docs to publish.  This or `from-file` must be specified.
+* `from-file` - the location of a single document.  This or `from` must be specified.
 * `publish-to` - What directory to put the docs in. A comma separated list of folder names.  `$version` will be replaced with the passed version
   (or error if it isn't passed).  `$latest` will be replaced with `snapshot` for snapshot versions (`snapshot` is in the string in any case), 
   `release` otherwise (or error if `version` isn't passed), unless set using `latests`. 
@@ -31,3 +32,6 @@ contains `$version`.
 This gives two modes of operation: one where `version` is specified, `publish-to` can use `version` or `version+latest`,
 and `message` can use `$version`, and one where `version` is not specified and `pubish-to` must be a path and `message`
 can't use `$version`.
+
+All children of `from` will be copied into each `publish-to` directory, which will each be cleared beforehand.  If `from-file` is used instead, 
+the file will be copied into each `publish-to` directory, without doing any clearing.

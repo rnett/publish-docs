@@ -2,8 +2,11 @@ name: 'Publish docs'
 description: 'Publishes docs to github pages'
 inputs:
   from:
-    description: The location of the docs
-    required: true
+    description: The location of the docs.  Mutually exclusive with from-file
+    required: false
+  from-file:
+    description: The location of the doc file.  Mutually exclusive with from
+    required: false
   publish-to:
     description: "The folder in the branch to put the docs in.  See README.md."
     required: false

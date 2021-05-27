@@ -19,16 +19,23 @@ fun parseLocation(location: String, version: String?, isSnapshot: Boolean?, late
         .replace("\\\\", "\\")
 }
 
-suspend fun updateDocs(folder: Path, from: Path) {
+suspend fun updateDocs(folder: Path, from: Path, delete: Boolean) {
     folder.mkdir()
     log.info("Copying docs to $folder")
-    folder.children.forEach { it.delete(true) }
+    if(delete)
+        folder.children.forEach { it.delete(true) }
     from.copyChildren(folder)
 }
 
 suspend fun main() = runOrFail {
 
-    val from by inputs
+    val from by inputs.optional
+    val fromFile by inputs.optional
+
+    if(from != null && fromFile != null){
+        fail("Should only specify one of 'from' and 'from-file'")
+    }
+
     val branch by inputs
 
     val authorName = inputs["author-name"]
@@ -74,7 +81,10 @@ suspend fun main() = runOrFail {
         .map { parseLocation(it.trimStart('!', '?'), version, isSnapshot, latestSnapshot, latestRelease) }
 
     val fromPath = Path("../docs-temp/").apply { mkdir() }
-    Path(from).moveChildren(fromPath)
+    if(from != null)
+        Path(from!!).moveChildren(fromPath)
+    else
+        Path(fromFile!!).move(fromPath)
 
     val restoreDir = if (restore) {
         log.info("Saving working directory")
@@ -106,7 +116,7 @@ suspend fun main() = runOrFail {
     }
 
     publishTo.forEach {
-        updateDocs(Path.cwd / it, fromPath)
+        updateDocs(Path.cwd / it, fromPath, from != null)
     }
 
     exec.execCommand("git add .")
