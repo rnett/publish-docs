@@ -32,8 +32,11 @@ suspend fun main() = runOrFail {
     val from by inputs.optional
     val fromFile by inputs.optional
 
-    if(from != null && fromFile != null){
-        fail("Should only specify one of 'from' and 'from-file'")
+    if(from.isNullOrBlank() && fromFile.isNullOrBlank()){
+        fail("Should only specify one of 'from' and 'from-file'.")
+    }
+    if(from.isNullOrBlank() && fromFile.isNullOrBlank()){
+        fail("Must specify exactly one of: 'from', 'from-file'.")
     }
 
     val branch by inputs
@@ -81,7 +84,7 @@ suspend fun main() = runOrFail {
         .map { parseLocation(it.trimStart('!', '?'), version, isSnapshot, latestSnapshot, latestRelease) }
 
     val fromPath = Path("../docs-temp/").apply { mkdir() }
-    if(from != null)
+    if(!from.isNullOrBlank())
         Path(from!!).moveChildren(fromPath)
     else
         Path(fromFile!!).move(fromPath)
@@ -116,7 +119,7 @@ suspend fun main() = runOrFail {
     }
 
     publishTo.forEach {
-        updateDocs(Path.cwd / it, fromPath, from != null)
+        updateDocs(Path.cwd / it, fromPath, !from.isNullOrBlank())
     }
 
     exec.execCommand("git add .")
