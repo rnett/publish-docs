@@ -127,7 +127,7 @@ suspend fun main() = runOrFail {
 
     exec.execCommand("git add .")
 
-    val changed = exec.execCommand("git diff-index --quiet HEAD", ignoreReturnCode = true) != 0
+    val changed = exec.execCommand("git diff-index --exit-code --quiet --cached HEAD", ignoreReturnCode = true) != 0
 
     if(changed) {
         exec.execCommand(
