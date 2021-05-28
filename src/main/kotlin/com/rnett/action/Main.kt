@@ -127,10 +127,18 @@ suspend fun main() = runOrFail {
 
     exec.execCommand("git add .")
 
-    exec.execCommand("git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
-            "commit -q -m \"${message.replace("\$version", version ?: "")}\"")
+    val changed = exec.execCommand("git diff-index --quiet HEAD", ignoreReturnCode = true) != 0
 
-    exec.execCommand("git push origin $branch")
+    if(changed) {
+        exec.execCommand(
+            "git -c user.name=\'$authorName\' -c user.email=\'$authorEmail\' " +
+                    "commit -q -m \"${message.replace("\$version", version ?: "")}\""
+        )
+
+        exec.execCommand("git push origin $branch")
+    } else{
+        println("No changes")
+    }
 
     if (restoreDir != null) {
         log.info("Restoring working directory")
