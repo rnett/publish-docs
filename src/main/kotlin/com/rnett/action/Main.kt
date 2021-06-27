@@ -2,8 +2,11 @@ package com.rnett.action
 
 import com.rnett.action.core.fail
 import com.rnett.action.core.inputs
-import com.rnett.action.core.log
+import com.rnett.action.core.logger
+import com.rnett.action.core.runAction
 import com.rnett.action.core.runOrFail
+import com.rnett.action.delegates.ifNull
+import com.rnett.action.delegates.isTrue
 import com.rnett.action.exec.exec
 
 fun parseLocation(location: String, version: String?, isSnapshot: Boolean?, latestSnapshot: String, latestRelease: String): String {
@@ -21,13 +24,13 @@ fun parseLocation(location: String, version: String?, isSnapshot: Boolean?, late
 
 suspend fun updateDocs(folder: Path, from: Path, delete: Boolean) {
     folder.mkdir()
-    log.info("Copying docs to $folder")
+    logger.info("Copying docs to $folder")
     if(delete)
         folder.children.forEach { it.delete(true) }
-    from.copyChildren(folder)
+    from.copyChildrenInto(folder)
 }
 
-suspend fun main() = runOrFail {
+suspend fun main() = runAction {
 
     val from by inputs.optional
     val fromFile by inputs.optional
@@ -41,8 +44,8 @@ suspend fun main() = runOrFail {
 
     val branch by inputs
 
-    val authorName = inputs["author-name"]
-    val authorEmail = inputs["author-email"]
+    val authorName by inputs
+    val authorEmail by inputs
 
     val version by inputs.optional
 
@@ -52,15 +55,9 @@ suspend fun main() = runOrFail {
         it.substringBefore('|') to it.substringAfter('|')
     }
 
-    val restore = inputs["restore"].toLowerCase() != "false"
+    val restore by inputs.isTrue()
 
-    /**
-     * Replaces $version with version, or errors if it isn't set
-     */
-    /**
-     * Replaces $version with version, or errors if it isn't set
-     */
-    val message by inputs.withDefault { if (version != null) "Docs for \$version" else "Docs update" }
+    val message by inputs.optional.ifNull { if (version != null) "Docs for \$version" else "Docs update" }
 
     if ("\$version" in message && version == null)
         fail("'\$version' used in message, but version not set.")
@@ -71,7 +68,7 @@ suspend fun main() = runOrFail {
        "version+latest"
        else uses as dir ("." for current)
      */
-    val isSnapshot = version?.toLowerCase()?.contains("snapshot")
+    val isSnapshot = version?.lowercase()?.contains("snapshot")
     val publishTo = inputs.getOrElse("publish-to") { if (version != null) "\$version,\$latest" else "." }
         .split(',').filter { it.isNotBlank() }
         .filterNot {
@@ -88,12 +85,12 @@ suspend fun main() = runOrFail {
         children.forEach { it.delete(true) }
     }
     if(!from.isNullOrBlank())
-        Path(from!!).moveChildren(fromPath)
+        Path(from!!).moveChildrenInto(fromPath)
     else
         Path(fromFile!!).move(fromPath)
 
     val restoreDir = if (restore) {
-        log.info("Saving working directory")
+        logger.info("Saving working directory")
         Path("../restore-temp/").apply { mkdir() }
     } else
         null
@@ -141,9 +138,9 @@ suspend fun main() = runOrFail {
     }
 
     if (restoreDir != null) {
-        log.info("Restoring working directory")
+        logger.info("Restoring working directory")
         Path.cwd.children.forEach { it.delete(true) }
-        restoreDir.moveChildren(Path.cwd)
+        restoreDir.moveChildrenInto(Path.cwd)
         restoreDir.delete(true)
     }
     fromPath.delete(true)
